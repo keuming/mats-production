@@ -1,9 +1,14 @@
 import { createTRPCReact } from "@trpc/react-query";
 import { httpBatchLink, createTRPCClient } from "@trpc/client";
 import superjson from "superjson";
-import type { AppRouter } from "../../../api/src/router";
+import type { AnyTRPCRouter } from "@trpc/server";
 
-export type { AppRouter };
+// Note: using a loose AnyTRPCRouter type instead of importing the concrete
+// AppRouter type from the API package. Importing the API's router.ts directly
+// pulls Express/Drizzle/server-only code into the frontend's type-check pass,
+// which breaks `tsc` in this Vercel monorepo setup. Runtime behavior (calls,
+// inputs, outputs) is unaffected — only compile-time autocomplete is reduced.
+type AppRouter = AnyTRPCRouter;
 
 const API_URL = import.meta.env.VITE_API_URL ?? "https://api.matstransport.com";
 

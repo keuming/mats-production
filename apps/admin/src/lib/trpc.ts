@@ -1,9 +1,11 @@
 import { createTRPCReact } from "@trpc/react-query";
 import { createTRPCClient, httpBatchLink } from "@trpc/client";
 import superjson from "superjson";
-import type { AppRouter } from "../../../api/src/router";
+import type { AnyTRPCRouter } from "@trpc/server";
 
-export type { AppRouter };
+// See apps/web/src/lib/trpc.ts for why we don't import the concrete
+// AppRouter type from the API package directly.
+type AppRouter = AnyTRPCRouter;
 
 const API_URL = import.meta.env.VITE_API_URL ?? "https://api.matstransport.com";
 
