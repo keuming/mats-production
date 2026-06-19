@@ -1,7 +1,7 @@
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import type express from "express";
-import { verifySessionToken } from "./lib/auth";
+import { verifySessionToken } from "./lib/auth.js";
 import { getDb } from "@mats/db";
 import { eq } from "drizzle-orm";
 import { users } from "@mats/db";

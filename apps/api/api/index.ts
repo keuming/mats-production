@@ -4,8 +4,8 @@ import helmet from "helmet";
 import cors from "cors";
 import { rateLimit } from "express-rate-limit";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
-import { appRouter } from "../src/router";
-import { createContext } from "../src/trpc";
+import { appRouter } from "../src/router.js";
+import { createContext } from "../src/trpc.js";
 
 const app = express();
 

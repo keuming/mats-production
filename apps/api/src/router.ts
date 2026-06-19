@@ -1,12 +1,12 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { router, publicProcedure, protectedProcedure, adminProcedure } from "./trpc";
+import { router, publicProcedure, protectedProcedure, adminProcedure } from "./trpc.js";
 import { getDb, users, trips, tickets, shipments, staff, transactions, charges, departures,
   buses, stations, stops, staffProfiles, bookings, seatLocks, routeFares, busLines,
   stationCashRegisters, cashierProfiles, luggageTickets, passengerBaggage, clientProfiles,
   loyaltyPoints, clientDiscounts, auditLogs, exchangeRates } from "@mats/db";
 import { eq, and, desc, asc, sql, inArray, like, or, gt, lt, ne, isNull, not } from "drizzle-orm";
-import { createSessionToken, hashPassword, verifyPassword, emailToOpenId } from "./lib/auth";
+import { createSessionToken, hashPassword, verifyPassword, emailToOpenId } from "./lib/auth.js";
 import { nanoid } from "nanoid";
 
 // Lazy database accessor: avoids crashing the whole serverless function
