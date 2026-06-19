@@ -46,7 +46,9 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // ── Health check ──────────────────────────────────────────────────────────────
-app.get("/health", (_, res) => res.json({ status: "ok", ts: new Date().toISOString() }));
+app.get("/health", (_req: express.Request, res: express.Response) =>
+  res.json({ status: "ok", ts: new Date().toISOString() })
+);
 
 // ── tRPC ──────────────────────────────────────────────────────────────────────
 app.use(
@@ -63,6 +65,6 @@ app.use(
 );
 
 // ── 404 fallback ──────────────────────────────────────────────────────────────
-app.use((_, res) => res.status(404).json({ error: "Not found" }));
+app.use((_req: express.Request, res: express.Response) => res.status(404).json({ error: "Not found" }));
 
 export default app;

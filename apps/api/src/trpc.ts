@@ -1,18 +1,18 @@
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
-import type { Request, Response } from "express";
+import type express from "express";
 import { verifySessionToken } from "./lib/auth";
 import { getDb } from "@mats/db";
 import { eq } from "drizzle-orm";
 import { users } from "@mats/db";
 
 export type TrpcContext = {
-  req: Request;
-  res: Response;
+  req: express.Request;
+  res: express.Response;
   user: typeof users.$inferSelect | null;
 };
 
-export async function createContext({ req, res }: { req: Request; res: Response }): Promise<TrpcContext> {
+export async function createContext({ req, res }: { req: express.Request; res: express.Response }): Promise<TrpcContext> {
   let user: typeof users.$inferSelect | null = null;
   try {
     const authHeader = req.headers.authorization;

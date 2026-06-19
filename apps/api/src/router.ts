@@ -9,7 +9,21 @@ import { eq, and, desc, asc, sql, inArray, like, or, gt, lt, ne, isNull, not } f
 import { createSessionToken, hashPassword, verifyPassword, emailToOpenId } from "./lib/auth";
 import { nanoid } from "nanoid";
 
-const db = getDb();
+// Lazy database accessor: avoids crashing the whole serverless function
+// at import time if DATABASE_URL is missing or misconfigured. The actual
+// connection is only established on first real query.
+function lazyDb() {
+  let cached: ReturnType<typeof getDb> | null = null;
+  return new Proxy({} as ReturnType<typeof getDb>, {
+    get(_target, prop) {
+      if (!cached) cached = getDb();
+      // @ts-expect-error dynamic proxy forwarding
+      return cached[prop];
+    },
+  });
+}
+
+const db = lazyDb();
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 const CREW_SEATS = new Set(["1", "2", "3"]);
