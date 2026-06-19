@@ -1,0 +1,303 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  /* MATS brand colors */
+  --color-mats-orange: var(--mats-orange);
+  --color-mats-orange-light: var(--mats-orange-light);
+  --color-mats-orange-dark: var(--mats-orange-dark);
+  --color-mats-purple: var(--mats-purple);
+}
+
+/* ============================================================
+   MATS — Maashaa Allah Transport Service
+   Palette : Violet MATS (#943fe3) + Blanc + Gris chaud
+   ============================================================ */
+:root {
+  /* MATS Brand Colors — Violet #943fe3 */
+  --mats-orange:       oklch(0.52 0.26 295);  /* #943fe3 – violet MATS principal */
+  --mats-orange-light: oklch(0.90 0.08 295);  /* violet très clair */
+  --mats-orange-dark:  oklch(0.38 0.22 295);  /* violet foncé */
+  --mats-purple:       oklch(0.52 0.26 295);  /* #943fe3 – violet MATS */
+
+  /* Primary = Violet MATS */
+  --primary:            oklch(0.52 0.26 295);
+  --primary-foreground: oklch(1 0 0);
+
+  /* Accent = Violet clair */
+  --accent:             oklch(0.93 0.06 295);
+  --accent-foreground:  oklch(0.38 0.22 295);
+
+  /* Secondary = Gris chaud */
+  --secondary:          oklch(0.97 0.005 55);
+  --secondary-foreground: oklch(0.35 0.01 55);
+
+  /* Muted */
+  --muted:              oklch(0.96 0.005 55);
+  --muted-foreground:   oklch(0.55 0.015 55);
+
+  /* Charts MATS */
+  --chart-1: oklch(0.52 0.26 295);
+  --chart-2: oklch(0.42 0.22 295);
+  --chart-3: oklch(0.68 0.18 295);
+  --chart-4: oklch(0.80 0.12 295);
+  --chart-5: oklch(0.38 0.22 295);
+
+  /* Sidebar MATS */
+  --sidebar:                    oklch(0.14 0.04 295);
+  --sidebar-foreground:         oklch(0.95 0.005 295);
+  --sidebar-primary:            oklch(0.52 0.26 295);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent:             oklch(0.22 0.08 295);
+  --sidebar-accent-foreground:  oklch(0.95 0.005 295);
+  --sidebar-border:             oklch(1 0 0 / 10%);
+  --sidebar-ring:               oklch(0.52 0.26 295);
+
+  /* Base */
+  --radius: 0.65rem;
+  --background:        oklch(1 0 0);
+  --foreground:        oklch(0.18 0.015 55);
+  --card:              oklch(1 0 0);
+  --card-foreground:   oklch(0.18 0.015 55);
+  --popover:           oklch(1 0 0);
+  --popover-foreground: oklch(0.18 0.015 55);
+  --destructive:       oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border:            oklch(0.90 0.01 55);
+  --input:             oklch(0.90 0.01 55);
+  --ring:              oklch(0.52 0.26 295);
+}
+
+.dark {
+  --primary:            oklch(0.62 0.26 295);
+  --primary-foreground: oklch(0.12 0.01 295);
+  --accent:             oklch(0.28 0.10 295);
+  --accent-foreground:  oklch(0.92 0.08 295);
+  --secondary:          oklch(0.22 0.01 55);
+  --secondary-foreground: oklch(0.80 0.005 55);
+  --muted:              oklch(0.25 0.01 55);
+  --muted-foreground:   oklch(0.65 0.015 55);
+  --chart-1: oklch(0.62 0.26 295);
+  --chart-2: oklch(0.52 0.22 295);
+  --chart-3: oklch(0.78 0.16 295);
+  --chart-4: oklch(0.42 0.20 295);
+  --chart-5: oklch(0.68 0.22 295);
+  --sidebar:                    oklch(0.10 0.04 295);
+  --sidebar-foreground:         oklch(0.92 0.005 295);
+  --sidebar-primary:            oklch(0.62 0.26 295);
+  --sidebar-primary-foreground: oklch(0.12 0.01 295);
+  --sidebar-accent:             oklch(0.18 0.08 295);
+  --sidebar-accent-foreground:  oklch(0.92 0.005 295);
+  --sidebar-border:             oklch(1 0 0 / 8%);
+  --sidebar-ring:               oklch(0.62 0.26 295);
+  --background:        oklch(0.12 0.01 55);
+  --foreground:        oklch(0.92 0.005 55);
+  --card:              oklch(0.16 0.01 55);
+  --card-foreground:   oklch(0.92 0.005 55);
+  --popover:           oklch(0.16 0.01 55);
+  --popover-foreground: oklch(0.92 0.005 55);
+  --destructive:       oklch(0.704 0.191 22.216);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border:            oklch(1 0 0 / 10%);
+  --input:             oklch(1 0 0 / 15%);
+  --ring:              oklch(0.62 0.26 295);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', 'Poppins', sans-serif;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', 'Inter', sans-serif;
+  }
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [type="button"]:not(:disabled),
+  [type="submit"]:not(:disabled),
+  [type="reset"]:not(:disabled),
+  a[href],
+  select:not(:disabled),
+  input[type="checkbox"]:not(:disabled),
+  input[type="radio"]:not(:disabled) {
+    @apply cursor-pointer;
+  }
+}
+
+@layer components {
+  .container {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .flex {
+    min-height: 0;
+    min-width: 0;
+  }
+
+  @media (min-width: 640px) {
+    .container {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .container {
+      padding-left: 2rem;
+      padding-right: 2rem;
+      max-width: 1280px;
+    }
+  }
+
+  /* MATS gradient hero */
+  .mats-hero-gradient {
+    background: linear-gradient(135deg,
+      oklch(0.14 0.02 290) 0%,
+      oklch(0.22 0.04 290) 40%,
+      oklch(0.30 0.08 40) 100%
+    );
+  }
+
+  /* MATS orange badge */
+  .mats-badge {
+    background-color: oklch(0.72 0.19 46);
+    color: oklch(1 0 0);
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  /* MATS card hover */
+  .mats-card-hover {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .mats-card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px oklch(0.72 0.19 46 / 0.15);
+  }
+
+  /* MATS section title */
+  .mats-section-title {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    color: oklch(0.18 0.015 55);
+    position: relative;
+  }
+  .mats-section-title::after {
+    content: '';
+    display: block;
+    width: 3rem;
+    height: 3px;
+    background: oklch(0.72 0.19 46);
+    border-radius: 9999px;
+    margin-top: 0.5rem;
+  }
+}
+
+/* ─── MATS Print Styles — Fiche de départ agent ──────────────────────────── */
+@media print {
+  /* Masquer tout le contenu normal de la page */
+  body > * { display: none !important; }
+
+  /* Afficher uniquement la fiche d'impression */
+  #mats-print-sheet {
+    display: block !important;
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 99999 !important;
+    background: white !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Reset général pour l'impression */
+  @page {
+    size: A4 portrait;
+    margin: 10mm 12mm;
+  }
+
+  #mats-print-sheet * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  /* Forcer les couleurs de fond */
+  .print-bg-orange { background-color: #943fe3 !important; }
+  .print-bg-orange-light { background-color: #fff7ed !important; }
+  .print-bg-gray { background-color: #f9fafb !important; }
+  .print-border-orange { border-color: #e9d5ff !important; }
+
+  /* Masquer les boutons et éléments non imprimables */
+  .no-print { display: none !important; }
+}
+
+/* ── Blog Article Content Styles ───────────────────────────────────────────── */
+.blog-content article { font-size: 1rem; line-height: 1.8; color: #374151; }
+.blog-content h2 { font-family: 'Poppins', sans-serif; font-size: 1.5rem; font-weight: 700; color: #111827; margin-top: 2.5rem; margin-bottom: 1rem; }
+.blog-content h3 { font-family: 'Poppins', sans-serif; font-size: 1.15rem; font-weight: 600; color: #1f2937; margin-top: 1.75rem; margin-bottom: 0.75rem; }
+.blog-content p { margin-bottom: 1.25rem; }
+.blog-content ul { list-style: disc; padding-left: 1.5rem; margin-bottom: 1.25rem; }
+.blog-content ul li { margin-bottom: 0.5rem; }
+.blog-content strong { color: #111827; font-weight: 600; }
+.blog-content em { color: #6b7280; }
+.blog-content a { color: #943fe3; text-decoration: underline; font-weight: 500; }
+.blog-content a:hover { color: #7c3aed; }
+.blog-content .blog-intro p { font-size: 1.1rem; color: #4b5563; }
+.blog-content .blog-section { margin-bottom: 2rem; }
+.blog-content .blog-cta { background: linear-gradient(135deg, #fff7ed, #ffedd5); border: 1px solid #e9d5ff; border-radius: 1rem; padding: 1.5rem; text-align: center; margin-top: 2.5rem; }
+.blog-content .blog-cta p { font-size: 1.05rem; font-weight: 500; color: #5b21b6; margin: 0; }
+.blog-content .blog-table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; font-size: 0.9rem; }
+.blog-content .blog-table thead tr { background: #fff7ed; }
+.blog-content .blog-table th { padding: 0.75rem 1rem; text-align: left; font-weight: 600; color: #92400e; border-bottom: 2px solid #e9d5ff; }
+.blog-content .blog-table td { padding: 0.65rem 1rem; border-bottom: 1px solid #f3f4f6; color: #374151; }
+.blog-content .blog-table tr:hover td { background: #fffbf5; }

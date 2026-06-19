@@ -1,0 +1,24 @@
+{
+  "name": "mats-transport",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "db:push": "pnpm --filter @mats/db db:push",
+    "db:studio": "pnpm --filter @mats/db db:studio",
+    "seed": "tsx scripts/seed.ts"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.3",
+    "tsx": "^4.19.1",
+    "@neondatabase/serverless": "^0.10.4",
+    "drizzle-orm": "^0.44.5"
+  },
+  "packageManager": "pnpm@10.4.1"
+}
