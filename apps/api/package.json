@@ -1,7 +1,7 @@
 {
   "name": "@mats/api",
   "version": "1.0.0",
-  "private": true,
+  "private": true,n  "engines": { "node": "20.x" },
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
