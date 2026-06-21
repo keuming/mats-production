@@ -650,6 +650,7 @@ export const appRouter = router({
 
         const ticketNumber = genRef("TK");
         const [ticket] = await db.insert(tickets).values({
+          ticketNumber,
           departureRef: input.departureRef,
           passengerName: input.passengerName,
           passengerPhone: input.passengerPhone,
@@ -998,7 +999,7 @@ export const appRouter = router({
         return { success: true };
       }),
 
-    getRouteFares: protectedProcedure.query(async () => {
+    getRouteFares: publicProcedure.query(async () => {
       return db.select().from(routeFares).where(eq(routeFares.isActive, true)).orderBy(asc(routeFares.fromCity));
     }),
 
