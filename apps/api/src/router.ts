@@ -620,8 +620,14 @@ export const appRouter = router({
         passengerName: z.string().min(2),
         passengerPhone: z.string().min(8),
         passengerEmail: z.string().email().optional(),
+        emergencyPhone: z.string().optional(),
+        passengerIdType: z.enum(["passport", "national_id", "consular_card", "resident_card", "laissez_passer", "other"]).default("national_id"),
+        passengerIdNumber: z.string().optional(),
+        passengerGender: z.enum(["male", "female", "other"]).optional(),
         seatNumber: z.string().min(1),
         seatClass: z.enum(["ordinaire", "confort", "vip"]).default("ordinaire"),
+        dropOffStop: z.string().optional(),
+        luggageCount: z.number().int().min(0).default(0),
         paymentMethod: z.enum(["cash", "mobile_money", "card", "transfer"]).default("mobile_money"),
       }))
       .mutation(async ({ input }) => {
@@ -654,10 +660,16 @@ export const appRouter = router({
           departureRef: input.departureRef,
           passengerName: input.passengerName,
           passengerPhone: input.passengerPhone,
+          emergencyPhone: input.emergencyPhone,
+          passengerIdType: input.passengerIdType,
+          passengerIdNumber: input.passengerIdNumber,
+          passengerGender: input.passengerGender,
           seatNumber: input.seatNumber,
           seatClass: input.seatClass,
           bookingChannel: "en_ligne",
           destinationCity: dep.arrivalCity,
+          dropOffStop: input.dropOffStop,
+          luggageCount: input.luggageCount,
           pricePaid,
           currency: "XOF",
           paymentMethod: input.paymentMethod,
@@ -1037,7 +1049,7 @@ export const appRouter = router({
         return line;
       }),
 
-    getStops: protectedProcedure
+    getStops: publicProcedure
       .input(z.object({ lineCode: z.string().optional() }).optional())
       .query(async ({ input }) => {
         const conds = input?.lineCode ? [eq(stops.lineCode, input.lineCode)] : [];
