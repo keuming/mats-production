@@ -75,7 +75,7 @@ function CreateDepartureDialog() {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     createDeparture.mutate({
-      lineCode: lineCode || undefined,
+      lineCode,
       departureCity,
       arrivalCity,
       departureCountry,
@@ -106,15 +106,20 @@ function CreateDepartureDialog() {
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label>Ligne (optionnel)</Label>
+            <Label>Ligne *</Label>
             <Select value={lineCode} onValueChange={setLineCode}>
-              <SelectTrigger><SelectValue placeholder="Aucune ligne" /></SelectTrigger>
+              <SelectTrigger><SelectValue placeholder="Choisir une ligne (obligatoire)" /></SelectTrigger>
               <SelectContent>
                 {lines?.map((l) => (
                   <SelectItem key={l.id} value={l.code}>{l.code} — {l.name}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
+            {lines?.length === 0 && (
+              <p className="text-xs text-red-600 mt-1">
+                Aucune ligne configurée. Créez-en une dans Configuration → Lignes avant de planifier un départ.
+              </p>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-3">
@@ -226,7 +231,7 @@ function CreateDepartureDialog() {
           </div>
 
           <DialogFooter>
-            <Button type="submit" className="bg-mats-purple hover:bg-mats-purple/90" disabled={createDeparture.isPending}>
+            <Button type="submit" className="bg-mats-purple hover:bg-mats-purple/90" disabled={createDeparture.isPending || !lineCode}>
               {createDeparture.isPending ? "Création..." : "Créer le départ"}
             </Button>
           </DialogFooter>

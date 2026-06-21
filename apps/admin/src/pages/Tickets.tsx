@@ -12,6 +12,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import DashboardLayout from "@/components/DashboardLayout";
+import SeatPicker from "@/components/SeatPicker";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 
@@ -71,6 +72,10 @@ function CreateTicketDialog() {
   const stops = trpc.config.getStops.useQuery(
     { lineCode: selectedDeparture?.lineCode ?? undefined },
     { enabled: !!selectedDeparture?.lineCode }
+  );
+  const occupiedSeatsQuery = trpc.tickets.getOccupiedSeats.useQuery(
+    { departureRef },
+    { enabled: !!departureRef }
   );
 
   const createTicket = trpc.tickets.create.useMutation({
@@ -205,22 +210,31 @@ function CreateTicketDialog() {
           <div className="border-t pt-4">
             <h3 className="text-sm font-semibold mb-3 text-gray-700">Voyage</h3>
             <div className="space-y-3">
-              <div className="grid grid-cols-2 gap-3">
+              {!departureRef ? (
+                <p className="text-sm text-gray-400 italic">Choisissez d'abord un départ pour voir le plan du bus.</p>
+              ) : (
                 <div>
-                  <Label>N° de siège</Label>
-                  <Input value={seatNumber} onChange={(e) => setSeatNumber(e.target.value)} placeholder="ex: 12" />
+                  <Label>Siège</Label>
+                  <SeatPicker
+                    totalSeats={selectedDeparture?.totalSeats ?? 70}
+                    occupiedSeats={occupiedSeatsQuery.data?.occupiedSeats ?? []}
+                    crewSeats={occupiedSeatsQuery.data?.crewSeats ?? ["1", "2", "3", "4"]}
+                    selectedSeat={seatNumber}
+                    onSelect={setSeatNumber}
+                    isAdmin
+                  />
                 </div>
-                <div>
-                  <Label>Classe</Label>
-                  <Select value={seatClass} onValueChange={(v) => setSeatClass(v as typeof seatClass)}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {Object.entries(SEAT_CLASS_LABELS).map(([v, l]) => (
-                        <SelectItem key={v} value={v}>{l}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+              )}
+              <div>
+                <Label>Classe</Label>
+                <Select value={seatClass} onValueChange={(v) => setSeatClass(v as typeof seatClass)}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(SEAT_CLASS_LABELS).map(([v, l]) => (
+                      <SelectItem key={v} value={v}>{l}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <Label>Arrêt de descente (si différent du terminus)</Label>

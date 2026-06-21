@@ -26,7 +26,7 @@ function lazyDb() {
 const db = lazyDb();
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
-const CREW_SEATS = new Set(["1", "2", "3"]);
+const CREW_SEATS = new Set(["1", "2", "3", "4"]);
 function genRef(prefix: string): string {
   return `${prefix}-${nanoid(8).toUpperCase()}`;
 }
@@ -352,7 +352,7 @@ export const appRouter = router({
 
     create: protectedProcedure
       .input(z.object({
-        lineCode: z.string().optional(),
+        lineCode: z.string().min(1, "La ligne est obligatoire"),
         departureCity: z.string().min(1),
         arrivalCity: z.string().min(1),
         departureCountry: z.string().default("Bénin"),
@@ -592,6 +592,21 @@ export const appRouter = router({
         .orderBy(desc(tickets.issuedAt))
         .limit(100);
     }),
+
+    getOccupiedSeats: publicProcedure
+      .input(z.object({ departureRef: z.string() }))
+      .query(async ({ input }) => {
+        const occupied = await db.select({ seatNumber: tickets.seatNumber })
+          .from(tickets)
+          .where(and(
+            eq(tickets.departureRef, input.departureRef),
+            ne(tickets.status, "cancelled")
+          ));
+        return {
+          occupiedSeats: occupied.map((t) => t.seatNumber).filter((s): s is string => !!s),
+          crewSeats: Array.from(CREW_SEATS),
+        };
+      }),
   }),
 
   // ─── Shipments ────────────────────────────────────────────────────────────
