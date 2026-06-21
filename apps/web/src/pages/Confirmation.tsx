@@ -10,7 +10,7 @@ import { toast } from "sonner";
 
 export default function Confirmation() {
   const { ref } = useParams<{ ref: string }>();
-  const { data: booking, isLoading } = trpc.bookings.getByRef.useQuery({ ref: ref! });
+  const { data: ticket, isLoading } = trpc.tickets.getByNumber.useQuery({ number: ref! });
 
   function copyRef() {
     navigator.clipboard.writeText(ref!);
@@ -21,11 +21,11 @@ export default function Confirmation() {
     return <div className="min-h-screen flex items-center justify-center">Chargement...</div>;
   }
 
-  if (!booking) {
+  if (!ticket) {
     return (
       <div className="min-h-screen flex flex-col">
         <SiteHeader />
-        <main className="flex-1 flex items-center justify-center text-gray-500">Réservation introuvable.</main>
+        <main className="flex-1 flex items-center justify-center text-gray-500">Billet introuvable.</main>
         <SiteFooter />
       </div>
     );
@@ -44,17 +44,18 @@ export default function Confirmation() {
 
         <Card className="p-6 text-center">
           <div className="flex justify-center mb-4">
-            <QRCodeSVG value={booking.bookingRef} size={180} />
+            <QRCodeSVG value={ticket.ticketNumber} size={180} />
           </div>
           <button onClick={copyRef} className="inline-flex items-center gap-2 text-mats-purple font-mono font-semibold">
-            {booking.bookingRef} <Copy className="h-4 w-4" />
+            {ticket.ticketNumber} <Copy className="h-4 w-4" />
           </button>
 
           <div className="mt-6 space-y-2 text-left text-sm border-t pt-4">
-            <div className="flex justify-between"><span className="text-gray-500">Passager</span><span>{booking.passengerName}</span></div>
-            <div className="flex justify-between"><span className="text-gray-500">Téléphone</span><span>{booking.passengerPhone}</span></div>
-            <div className="flex justify-between"><span className="text-gray-500">Montant</span><span>{booking.totalAmount} {booking.currency}</span></div>
-            <div className="flex justify-between"><span className="text-gray-500">Statut</span><span className="capitalize">{booking.status}</span></div>
+            <div className="flex justify-between"><span className="text-gray-500">Passager</span><span>{ticket.passengerName}</span></div>
+            <div className="flex justify-between"><span className="text-gray-500">Téléphone</span><span>{ticket.passengerPhone}</span></div>
+            <div className="flex justify-between"><span className="text-gray-500">Siège</span><span>{ticket.seatNumber ?? "—"}</span></div>
+            <div className="flex justify-between"><span className="text-gray-500">Montant</span><span>{ticket.pricePaid} {ticket.currency}</span></div>
+            <div className="flex justify-between"><span className="text-gray-500">Statut paiement</span><span className="capitalize">{ticket.paymentStatus}</span></div>
           </div>
         </Card>
 

@@ -17,7 +17,7 @@ export default function Search() {
   const [to, setTo] = useState(params.get("to") ?? "");
   const [date, setDate] = useState(params.get("date") ?? "");
 
-  const { data: trips, isLoading } = trpc.trips.search.useQuery(
+  const { data: departures, isLoading } = trpc.departures.publicList.useQuery(
     { from, to, date: date || undefined },
     { enabled: !!from && !!to }
   );
@@ -28,7 +28,7 @@ export default function Search() {
     if (from) p.set("from", from);
     if (to) p.set("to", to);
     if (date) p.set("date", date);
-    navigate(`/search?${p.toString()}`);
+    navigate("/search?" + p.toString());
   }
 
   return (
@@ -60,29 +60,33 @@ export default function Search() {
           <p className="text-center text-gray-500 py-12">Indiquez une ville de départ et d'arrivée pour voir les trajets disponibles.</p>
         ) : isLoading ? (
           <p className="text-center text-gray-500 py-12">Recherche en cours...</p>
-        ) : !trips || trips.length === 0 ? (
-          <p className="text-center text-gray-500 py-12">Aucun trajet trouvé pour {from} → {to}.</p>
+        ) : !departures || departures.length === 0 ? (
+          <p className="text-center text-gray-500 py-12">Aucun départ trouvé pour {from} → {to}.</p>
         ) : (
           <div className="space-y-4">
-            <h2 className="font-semibold text-lg">{trips.length} trajet(s) trouvé(s)</h2>
-            {trips.map((trip) => (
-              <Card key={trip.id} className="p-4 flex items-center justify-between gap-4 flex-wrap">
+            <h2 className="font-semibold text-lg">{departures.length} départ(s) trouvé(s)</h2>
+            {departures.map((dep) => (
+              <Card key={dep.id} className="p-4 flex items-center justify-between gap-4 flex-wrap">
                 <div>
                   <div className="flex items-center gap-2 font-semibold">
-                    {trip.departureCity} <ArrowRight className="h-4 w-4 text-mats-purple" /> {trip.arrivalCity}
+                    {dep.departureCity} <ArrowRight className="h-4 w-4 text-mats-purple" /> {dep.arrivalCity}
                   </div>
                   <div className="text-sm text-gray-500 mt-1">
-                    {trip.departureDate} à {trip.departureTime}
-                    {trip.estimatedArrivalTime && ` — arrivée estimée ${trip.estimatedArrivalTime}`}
+                    {dep.departureDate} à {dep.departureTime}
+                    {dep.estimatedArrivalTime && " — arrivée estimée " + dep.estimatedArrivalTime}
                   </div>
                   <div className="text-sm text-gray-500">
-                    {trip.availableSeats} place(s) disponible(s)
+                    {dep.availableSeats} place(s) disponible(s)
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <div className="text-xl font-bold text-mats-purple">{trip.priceXof ?? trip.priceGhs} XOF</div>
-                  <Link href={`/reserver/${trip.id}`}>
-                    <Button className="bg-mats-purple hover:bg-mats-purple/90">Réserver</Button>
+                  <div className="text-xl font-bold text-mats-purple">
+                    {dep.priceXof ? dep.priceXof + " XOF" : "Prix sur demande"}
+                  </div>
+                  <Link href={"/reserver/" + dep.departureRef}>
+                    <Button className="bg-mats-purple hover:bg-mats-purple/90" disabled={dep.availableSeats <= 0}>
+                      {dep.availableSeats <= 0 ? "Complet" : "Réserver"}
+                    </Button>
                   </Link>
                 </div>
               </Card>

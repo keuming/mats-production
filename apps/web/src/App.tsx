@@ -30,7 +30,7 @@ export default function App() {
         <Route path="/" component={Home} />
         <Route path="/search" component={Search} />
         <Route path="/departs" component={DeparturesPublic} />
-        <Route path="/reserver/:tripId" component={BookingPage} />
+        <Route path="/reserver/:departureRef" component={BookingPage} />
         <Route path="/confirmation/:ref" component={Confirmation} />
         <Route path="/suivi" component={Tracking} />
         <Route path="/verifier" component={VerifyTicket} />

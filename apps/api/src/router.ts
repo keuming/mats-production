@@ -26,7 +26,7 @@ function lazyDb() {
 const db = lazyDb();
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
-const CREW_SEATS = new Set(["1", "2", "3", "4"]);
+const CREW_SEATS = new Set(["1", "2", "3", "4"]); // verified
 function genRef(prefix: string): string {
   return `${prefix}-${nanoid(8).toUpperCase()}`;
 }
@@ -317,7 +317,7 @@ export const appRouter = router({
         if (input?.date) conds.push(eq(departures.departureDate, input.date));
         if (input?.from) conds.push(like(departures.departureCity, `%${input.from}%`));
         if (input?.to) conds.push(like(departures.arrivalCity, `%${input.to}%`));
-        return db.select({
+        const rows = await db.select({
           id: departures.id,
           departureRef: departures.departureRef,
           departureCity: departures.departureCity,
@@ -328,11 +328,17 @@ export const appRouter = router({
           departureStation: departures.departureStation,
           arrivalStation: departures.arrivalStation,
           status: departures.status,
-          // Show available seats minus crew
-          availableSeats: sql<number>`GREATEST(0, ${departures.availableSeats} - 3)`,
+          availableSeats: sql<number>`GREATEST(0, ${departures.availableSeats} - 4)`,
           totalSeats: departures.totalSeats,
-        }).from(departures).where(and(...conds))
+          priceXof: routeFares.priceXof,
+        }).from(departures)
+          .leftJoin(routeFares, and(
+            eq(routeFares.fromCity, departures.departureCity),
+            eq(routeFares.toCity, departures.arrivalCity)
+          ))
+          .where(and(...conds))
           .orderBy(asc(departures.departureDate), asc(departures.departureTime));
+        return rows;
       }),
 
     get: protectedProcedure
@@ -471,7 +477,7 @@ export const appRouter = router({
         return t ?? null;
       }),
 
-    getByNumber: protectedProcedure
+    getByNumber: publicProcedure
       .input(z.object({ number: z.string() }))
       .query(async ({ input }) => {
         const [t] = await db.select().from(tickets)
@@ -606,6 +612,62 @@ export const appRouter = router({
           occupiedSeats: occupied.map((t) => t.seatNumber).filter((s): s is string => !!s),
           crewSeats: Array.from(CREW_SEATS),
         };
+      }),
+
+    createPublic: publicProcedure
+      .input(z.object({
+        departureRef: z.string().min(1),
+        passengerName: z.string().min(2),
+        passengerPhone: z.string().min(8),
+        passengerEmail: z.string().email().optional(),
+        seatNumber: z.string().min(1),
+        seatClass: z.enum(["ordinaire", "confort", "vip"]).default("ordinaire"),
+        paymentMethod: z.enum(["cash", "mobile_money", "card", "transfer"]).default("mobile_money"),
+      }))
+      .mutation(async ({ input }) => {
+        if (CREW_SEATS.has(input.seatNumber)) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Ce siège est réservé au personnel navigant" });
+        }
+
+        const [dep] = await db.select().from(departures)
+          .where(eq(departures.departureRef, input.departureRef)).limit(1);
+        if (!dep) throw new TRPCError({ code: "NOT_FOUND", message: "Départ introuvable" });
+        if (dep.status === "cancelled") throw new TRPCError({ code: "BAD_REQUEST", message: "Ce départ est annulé" });
+        if (dep.availableSeats <= 0) throw new TRPCError({ code: "BAD_REQUEST", message: "Plus de places disponibles" });
+
+        const seatTaken = await db.select().from(tickets)
+          .where(and(
+            eq(tickets.departureRef, input.departureRef),
+            eq(tickets.seatNumber, input.seatNumber),
+            ne(tickets.status, "cancelled")
+          )).limit(1);
+        if (seatTaken[0]) throw new TRPCError({ code: "CONFLICT", message: "Ce siège vient d'être pris, choisissez-en un autre" });
+
+        const [fare] = await db.select().from(routeFares)
+          .where(and(eq(routeFares.fromCity, dep.departureCity), eq(routeFares.toCity, dep.arrivalCity)))
+          .limit(1);
+        const pricePaid = fare?.priceXof ?? "0";
+
+        const ticketNumber = genRef("TK");
+        const [ticket] = await db.insert(tickets).values({
+          departureRef: input.departureRef,
+          passengerName: input.passengerName,
+          passengerPhone: input.passengerPhone,
+          seatNumber: input.seatNumber,
+          seatClass: input.seatClass,
+          bookingChannel: "en_ligne",
+          destinationCity: dep.arrivalCity,
+          pricePaid,
+          currency: "XOF",
+          paymentMethod: input.paymentMethod,
+          paymentStatus: "pending",
+        }).returning();
+
+        await db.update(departures)
+          .set({ availableSeats: sql`GREATEST(0, ${departures.availableSeats} - 1)`, updatedAt: new Date() })
+          .where(eq(departures.departureRef, input.departureRef));
+
+        return ticket;
       }),
   }),
 
