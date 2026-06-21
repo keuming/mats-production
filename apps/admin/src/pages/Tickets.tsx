@@ -310,10 +310,21 @@ function CreateTicketDialog() {
   );
 }
 
+const CHANNEL_COLORS: Record<string, string> = {
+  guichet: "bg-blue-100 text-blue-700",
+  en_ligne: "bg-purple-100 text-purple-700",
+  agent_mobile: "bg-amber-100 text-amber-700",
+  telephone: "bg-gray-100 text-gray-700",
+};
+
 export default function Tickets() {
   const [search, setSearch] = useState("");
+  const [channelFilter, setChannelFilter] = useState("all");
   const utils = trpc.useUtils();
-  const { data: tickets, isLoading } = trpc.tickets.list.useQuery({ search: search || undefined });
+  const { data: tickets, isLoading } = trpc.tickets.list.useQuery({
+    search: search || undefined,
+    bookingChannel: channelFilter !== "all" ? channelFilter : undefined,
+  });
 
   const cancelTicket = trpc.tickets.cancel.useMutation({
     onSuccess: () => {
@@ -326,14 +337,25 @@ export default function Tickets() {
   return (
     <DashboardLayout title="Billetterie">
       <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
-        <div className="relative max-w-xs flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <Input
-            placeholder="Rechercher un billet..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
-          />
+        <div className="flex items-center gap-2 flex-1 flex-wrap">
+          <div className="relative max-w-xs flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Input
+              placeholder="Rechercher un billet..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+          <Select value={channelFilter} onValueChange={setChannelFilter}>
+            <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tous les canaux</SelectItem>
+              {Object.entries(CHANNEL_LABELS).map(([v, l]) => (
+                <SelectItem key={v} value={v}>{l}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         <CreateTicketDialog />
       </div>
@@ -346,6 +368,7 @@ export default function Tickets() {
               <th className="px-4 py-3 font-medium">Passager</th>
               <th className="px-4 py-3 font-medium">Siège</th>
               <th className="px-4 py-3 font-medium">Classe</th>
+              <th className="px-4 py-3 font-medium">Canal</th>
               <th className="px-4 py-3 font-medium">Prix</th>
               <th className="px-4 py-3 font-medium">Statut</th>
               <th className="px-4 py-3 font-medium">Actions</th>
@@ -353,9 +376,9 @@ export default function Tickets() {
           </thead>
           <tbody className="divide-y">
             {isLoading ? (
-              <tr><td colSpan={7} className="px-4 py-8 text-center text-gray-500">Chargement...</td></tr>
+              <tr><td colSpan={8} className="px-4 py-8 text-center text-gray-500">Chargement...</td></tr>
             ) : !tickets || tickets.length === 0 ? (
-              <tr><td colSpan={7} className="px-4 py-8 text-center text-gray-500">Aucun billet trouvé.</td></tr>
+              <tr><td colSpan={8} className="px-4 py-8 text-center text-gray-500">Aucun billet trouvé.</td></tr>
             ) : (
               tickets.map((t) => (
                 <tr key={t.id}>
@@ -363,6 +386,9 @@ export default function Tickets() {
                   <td className="px-4 py-3">{t.passengerName}</td>
                   <td className="px-4 py-3">{t.seatNumber ?? "—"}</td>
                   <td className="px-4 py-3 text-gray-500">{SEAT_CLASS_LABELS[t.seatClass] ?? t.seatClass}</td>
+                  <td className="px-4 py-3">
+                    <Badge className={CHANNEL_COLORS[t.bookingChannel]}>{CHANNEL_LABELS[t.bookingChannel] ?? t.bookingChannel}</Badge>
+                  </td>
                   <td className="px-4 py-3">{t.pricePaid} {t.currency}</td>
                   <td className="px-4 py-3">
                     <Badge className={STATUS_COLORS[t.status]}>{t.status}</Badge>

@@ -451,6 +451,7 @@ export const appRouter = router({
       .input(z.object({
         status: z.string().optional(),
         departureRef: z.string().optional(),
+        bookingChannel: z.string().optional(),
         search: z.string().optional(),
         limit: z.number().optional(),
       }).optional())
@@ -458,6 +459,7 @@ export const appRouter = router({
         const conds = [];
         if (input?.status && input.status !== "all") conds.push(eq(tickets.status, input.status as any));
         if (input?.departureRef) conds.push(eq(tickets.departureRef, input.departureRef));
+        if (input?.bookingChannel && input.bookingChannel !== "all") conds.push(eq(tickets.bookingChannel, input.bookingChannel as any));
         if (input?.search) conds.push(or(
           like(tickets.passengerName, `%${input.search}%`),
           like(tickets.passengerPhone, `%${input.search}%`),
