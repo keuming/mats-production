@@ -21,7 +21,7 @@ export const chargeStatusEnum = pgEnum("charge_status", ["pending", "paid", "can
 export const passengerIdTypeEnum = pgEnum("passenger_id_type", ["passport", "national_id", "consular_card", "resident_card", "laissez_passer", "other"]);
 export const passengerGenderEnum = pgEnum("passenger_gender", ["male", "female", "other"]);
 export const vaccinationStatusEnum = pgEnum("vaccination_status", ["vaccinated", "not_vaccinated", "unknown"]);
-export const staffEmployeeRoleEnum = pgEnum("staff_employee_role", ["driver", "agent", "supervisor", "accountant", "mechanic", "other"]);
+export const staffEmployeeRoleEnum = pgEnum("staff_employee_role", ["driver", "convoyeur", "agent", "supervisor", "accountant", "mechanic", "other"]);
 export const seatLockStatusEnum = pgEnum("seat_lock_status", ["locked", "released"]);
 export const bookingStatusEnum = pgEnum("booking_status", ["pending", "confirmed", "cancelled", "expired"]);
 export const luggageStatusEnum = pgEnum("luggage_status", ["registered", "loaded", "delivered"]);
@@ -31,6 +31,8 @@ export const auditActionEnum = pgEnum("audit_action", [
   "create_charge", "disburse_charge", "create_booking", "confirm_booking",
   "encash_ticket", "encash_shipment", "board_passenger", "other"
 ]);
+export const seatClassEnum = pgEnum("seat_class", ["ordinaire", "confort", "vip"]);
+export const bookingChannelEnum = pgEnum("booking_channel", ["guichet", "en_ligne", "agent_mobile", "telephone"]);
 
 // ─── Users ──────────────────────────────────────────────────────────────────
 export const users = pgTable("users", {
@@ -105,6 +107,10 @@ export const departures = pgTable("departures", {
   busNumber: varchar("bus_number", { length: 50 }),
   driverId: integer("driver_id"),
   driverName: varchar("driver_name", { length: 100 }),
+  convoyeurId: integer("convoyeur_id"),
+  convoyeurName: varchar("convoyeur_name", { length: 100 }),
+  departureCountry: varchar("departure_country", { length: 100 }).default("Bénin").notNull(),
+  arrivalCountry: varchar("arrival_country", { length: 100 }).default("Bénin").notNull(),
   departureStationId: integer("departure_station_id"),
   departureStation: varchar("departure_station", { length: 150 }),
   arrivalStationId: integer("arrival_station_id"),
@@ -142,6 +148,8 @@ export const tickets = pgTable("tickets", {
   passengerNationality: varchar("passenger_nationality", { length: 60 }),
   passengerGender: passengerGenderEnum("passenger_gender"),
   seatNumber: varchar("seat_number", { length: 10 }),
+  seatClass: seatClassEnum("seat_class").default("ordinaire").notNull(),
+  bookingChannel: bookingChannelEnum("booking_channel").default("guichet").notNull(),
   destinationCity: varchar("destination_city", { length: 100 }),
   dropOffStop: varchar("drop_off_stop", { length: 150 }),
   luggageCount: integer("luggage_count").default(0),

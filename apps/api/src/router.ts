@@ -355,6 +355,8 @@ export const appRouter = router({
         lineCode: z.string().optional(),
         departureCity: z.string().min(1),
         arrivalCity: z.string().min(1),
+        departureCountry: z.string().default("Bénin"),
+        arrivalCountry: z.string().default("Bénin"),
         departureDate: z.string(),
         departureTime: z.string(),
         estimatedArrivalTime: z.string().optional(),
@@ -362,6 +364,8 @@ export const appRouter = router({
         busNumber: z.string().optional(),
         driverId: z.number().optional(),
         driverName: z.string().optional(),
+        convoyeurId: z.number().optional(),
+        convoyeurName: z.string().optional(),
         departureStationId: z.number().optional(),
         departureStation: z.string().optional(),
         arrivalStationId: z.number().optional(),
@@ -486,6 +490,8 @@ export const appRouter = router({
         passengerIdNumber: z.string().optional(),
         passengerGender: z.enum(["male", "female", "other"]).optional(),
         seatNumber: z.string().optional(),
+        seatClass: z.enum(["ordinaire", "confort", "vip"]).default("ordinaire"),
+        bookingChannel: z.enum(["guichet", "en_ligne", "agent_mobile", "telephone"]).default("guichet"),
         destinationCity: z.string().optional(),
         dropOffStop: z.string().optional(),
         luggageCount: z.number().default(0),
@@ -892,7 +898,7 @@ export const appRouter = router({
         name: z.string().min(2),
         phone: z.string().min(8),
         email: z.string().email().optional(),
-        role: z.enum(["driver", "agent", "supervisor", "accountant", "mechanic", "other"]),
+        role: z.enum(["driver", "convoyeur", "agent", "supervisor", "accountant", "mechanic", "other"]),
         station: z.string().optional(),
         salary: z.string().optional(),
       }))
@@ -906,7 +912,7 @@ export const appRouter = router({
       .input(z.object({ id: z.number(), data: z.object({
         name: z.string().optional(),
         phone: z.string().optional(),
-        role: z.enum(["driver", "agent", "supervisor", "accountant", "mechanic", "other"]).optional(),
+        role: z.enum(["driver", "convoyeur", "agent", "supervisor", "accountant", "mechanic", "other"]).optional(),
         station: z.string().optional(),
         isActive: z.boolean().optional(),
       }) }))
@@ -951,6 +957,36 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         const [line] = await db.insert(busLines).values(input).returning();
         return line;
+      }),
+
+    getStops: protectedProcedure
+      .input(z.object({ lineCode: z.string().optional() }).optional())
+      .query(async ({ input }) => {
+        const conds = input?.lineCode ? [eq(stops.lineCode, input.lineCode)] : [];
+        return db.select().from(stops)
+          .where(conds.length ? and(...conds) : undefined)
+          .orderBy(asc(stops.lineCode), asc(stops.orderIndex));
+      }),
+
+    createStop: adminProcedure
+      .input(z.object({
+        lineCode: z.string().min(1),
+        stationId: z.number().optional(),
+        stationName: z.string().min(1),
+        city: z.string().min(1),
+        orderIndex: z.number().int(),
+        estimatedMinutes: z.number().int().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const [stop] = await db.insert(stops).values(input).returning();
+        return stop;
+      }),
+
+    deleteStop: adminProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await db.delete(stops).where(eq(stops.id, input.id));
+        return { success: true };
       }),
   }),
 
