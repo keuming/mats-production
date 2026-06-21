@@ -16,7 +16,7 @@ app.set("trust proxy", 1);
 const allowedOrigins = [
   "https://matstransport.com",
   "https://www.matstransport.com",
-  "https://admin.matstransport.com",
+  "https://manager.matstransport.com",
   "http://localhost:3000",
   "http://localhost:5173",
 ];
